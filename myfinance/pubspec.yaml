@@ -1,0 +1,33 @@
+name: myfinance
+description: "A new Flutter project."
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.7.0 <4.0.0"
+
+dependencies:
+  cupertino_icons: ^1.0.8
+  flutter:
+    sdk: flutter
+  flutter_native_splash: ^2.4.5  # Splash Screen nativa
+  flutter_screenutil: ^5.9.0  # Responsividade
+  provider: ^6.1.2  # Gerenciamento de estado
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+
+flutter_native_splash:
+  color: "#0A3D62"  # Azul profundo, alinhado à identidade do app
+  image: assets/images/logo.png
+  android_12:
+    image: assets/images/logo.png
+    icon_background_color: "#0A3D62"
+  fullscreen: true
