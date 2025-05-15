@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:login/shared/controllers/theme_controller.dart';
 
+import 'features/home/presentation/home_page.dart';
 import 'features/login/presentation/login_page.dart';
+import 'features/register/presentation/register.dart';
 import 'shared/themes/dark_theme.dart';
 import 'shared/themes/light_theme.dart';
 
@@ -22,7 +24,14 @@ class LoginApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: themeMode,
-          home: const LoginPage(),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const LoginPage(),
+            '/register': (context) => const RegisterPage(),
+            '/home':
+                (context) => const HomePage(), // Passar o nome do usuário aqui
+          },
+          // home: const LoginPage(),
         );
       },
     );

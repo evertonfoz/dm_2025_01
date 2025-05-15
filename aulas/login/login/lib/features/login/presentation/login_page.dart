@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:login/features/login/datasource/login_datasource.dart';
 import 'package:login/features/login/presentation/widgets/login_text_form_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../shared/controllers/theme_controller.dart';
 
@@ -15,17 +17,66 @@ class _LoginPageState extends State {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
 
-  void _login() {
+  bool _lembrarDeMim = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberedEmail();
+  }
+
+  Future<void> _loadRememberedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('email');
+    final savedPassword = prefs.getString('senha');
+    if (savedEmail != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _senhaController.text = savedPassword ?? '';
+        _lembrarDeMim = true;
+      });
+    }
+  }
+
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      // Aqui vamos autenticar no próximo capítulo
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Login válido!')));
+      var result = await LoginDatasource.login(
+        _emailController.text,
+        _senhaController.text,
+      );
+
+      if (result == false) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login inválido!'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        // Navegar para a tela inicial
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     content: Text('Login válido!'),
+        //     backgroundColor: Colors.green,
+        //   ),
+        // );
+
+        final prefs = await SharedPreferences.getInstance();
+        if (_lembrarDeMim) {
+          await prefs.setString('email', _emailController.text);
+          await prefs.setString('senha', _senhaController.text);
+        } else {
+          await prefs.remove('email');
+          await prefs.remove('senha');
+        }
+
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
 
   void _goToRegister() {
-    // Navegar para a tela de registro
+    Navigator.pushNamed(context, '/register');
   }
 
   void _goToForgotPassword() {
@@ -71,6 +122,16 @@ class _LoginPageState extends State {
                 labelText: 'Senha',
                 obscureText: true,
                 formFieldType: FormFieldType.password,
+              ),
+              CheckboxListTile(
+                title: const Text('Lembrar de mim'),
+                value: _lembrarDeMim,
+                onChanged: (value) {
+                  setState(() {
+                    _lembrarDeMim = value ?? false;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,
               ),
               // TextFormField(
               //   controller: _senhaController,
